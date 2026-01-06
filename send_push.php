@@ -1,8 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 require __DIR__ . '/vendor/autoload.php';
 
 use Minishlink\WebPush\WebPush;
@@ -18,15 +14,19 @@ if (!$data || !isset($data['subscription'], $data['payload'])) {
 $auth = [
     'VAPID' => [
         'subject' => 'mailto:admin@tukity.com',
-        'publicKey' => 'BGac6XcWxJo4mIa7CCynt6n2Jx80V1BXVNrxMSrbLymmZ4hr7tVzpAauocv4JtIiGmLTOaHFktYRmQBFdeooH9E',
-        'privateKey' => 'NwZ2XPptUFk7OvNVH1Ss2eH8MQcxHCMrMi7dgkiiqHw'
+        'publicKey' => 'TU_VAPID_PUBLICA',
+        'privateKey' => 'TU_VAPID_PRIVADA'
     ]
 ];
 
 $webPush = new WebPush($auth);
+
 $subscription = Subscription::create($data['subscription']);
 
-$webPush->queueNotification($subscription, json_encode($data['payload']));
+$webPush->queueNotification(
+    $subscription,
+    json_encode($data['payload'], JSON_UNESCAPED_UNICODE)
+);
 
 foreach ($webPush->flush() as $report) {
     if ($report->isSuccess()) {
